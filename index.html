@@ -221,12 +221,51 @@
             background: #fff;
             color: #000;
         }
+
+        .model-selector {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+        }
+
+        .model-btn {
+            padding: 0.5rem 1.5rem;
+            background: transparent;
+            border: 1px solid #333;
+            color: #666;
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .model-btn:first-child {
+            border-right: none;
+        }
+
+        .model-btn.active {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        .model-btn:hover:not(.active) {
+            border-color: #666;
+            color: #aaa;
+        }
     </style>
 </head>
 <body>
 
     <h1>Type Check</h1>
     <p class="subtitle">Upload a photo. Get a verdict.</p>
+
+    <div class="model-selector">
+        <button class="model-btn active" data-model="v4">Model V4</button>
+        <button class="model-btn" data-model="v1">Model V1</button>
+    </div>
 
     <div class="upload-zone" id="upload-zone">
         <div class="icon">+</div>
@@ -262,8 +301,21 @@
             endpoint: "__CV_ENDPOINT__",
             projectId: "__PROJECT_ID__",
             trainingKey: "__TRAINING_KEY__",
-            iterationId: "__ITERATION_ID__"
+            iterations: {
+                "v4": "__ITERATION_ID__",
+                "v1": "__ITERATION_ID_1__"
+            }
         };
+
+        let selectedModel = "v4";
+
+        document.querySelectorAll(".model-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelector(".model-btn.active").classList.remove("active");
+                btn.classList.add("active");
+                selectedModel = btn.dataset.model;
+            });
+        });
 
         const uploadZone = document.getElementById("upload-zone");
         const fileInput = document.getElementById("file-input");
@@ -376,7 +428,8 @@
         }
 
         async function classifyImage(file) {
-            const url = `${CONFIG.endpoint}/customvision/v3.3/Training/projects/${CONFIG.projectId}/quicktest/image?iterationId=${CONFIG.iterationId}`;
+            const iterationId = CONFIG.iterations[selectedModel];
+            const url = `${CONFIG.endpoint}/customvision/v3.3/Training/projects/${CONFIG.projectId}/quicktest/image?iterationId=${iterationId}`;
 
             const response = await fetch(url, {
                 method: "POST",
