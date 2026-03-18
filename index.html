@@ -263,8 +263,8 @@
     <p class="subtitle">Upload a photo. Get a verdict.</p>
 
     <div class="model-selector">
-        <button class="model-btn active" data-model="v4">Model V4</button>
-        <button class="model-btn" data-model="v1">Model V1</button>
+        <button class="model-btn active" data-model="v1">Stable</button>
+        <button class="model-btn" data-model="v4">Beta</button>
     </div>
 
     <div class="upload-zone" id="upload-zone">
@@ -307,7 +307,7 @@
             }
         };
 
-        let selectedModel = "v4";
+        let selectedModel = "v1";
 
         document.querySelectorAll(".model-btn").forEach(btn => {
             btn.addEventListener("click", () => {
