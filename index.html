@@ -12,70 +12,63 @@
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: #000;
             color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem 1rem;
+            padding: 4rem 1rem 2rem;
         }
 
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.3rem;
-            background: linear-gradient(90deg, #ff6b6b, #ee5a24, #ff6b6b);
-            background-size: 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
         }
 
         .subtitle {
-            font-size: 1.1rem;
-            color: #a0a0c0;
-            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #888;
+            letter-spacing: 0.08em;
+            margin-bottom: 3rem;
         }
 
         .upload-zone {
             width: 100%;
-            max-width: 500px;
-            border: 3px dashed #444;
-            border-radius: 20px;
-            padding: 3rem 2rem;
+            max-width: 480px;
+            border: 1px solid #333;
+            padding: 3.5rem 2rem;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.03);
-            position: relative;
+            transition: border-color 0.3s ease;
+            background: transparent;
         }
 
         .upload-zone:hover,
         .upload-zone.dragover {
-            border-color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.05);
-            transform: scale(1.02);
+            border-color: #fff;
         }
 
         .upload-zone .icon {
-            font-size: 4rem;
+            font-size: 2rem;
             margin-bottom: 1rem;
+            color: #555;
         }
 
         .upload-zone p {
-            font-size: 1.1rem;
-            color: #888;
+            font-size: 0.95rem;
+            color: #666;
+            font-weight: 300;
         }
 
         .upload-zone p span {
-            color: #ff6b6b;
-            text-decoration: underline;
+            color: #fff;
+            border-bottom: 1px solid #fff;
+            cursor: pointer;
         }
 
         #file-input {
@@ -84,8 +77,8 @@
 
         .preview-container {
             width: 100%;
-            max-width: 500px;
-            margin-top: 1.5rem;
+            max-width: 480px;
+            margin-top: 2rem;
             display: none;
         }
 
@@ -95,7 +88,6 @@
 
         .preview-img-wrapper {
             width: 100%;
-            border-radius: 16px;
             overflow: hidden;
             position: relative;
         }
@@ -103,7 +95,7 @@
         .preview-img-wrapper img {
             width: 100%;
             display: block;
-            border-radius: 16px;
+            filter: grayscale(30%);
         }
 
         .result-overlay {
@@ -112,35 +104,35 @@
             left: 0;
             right: 0;
             padding: 1.5rem;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
-            border-radius: 0 0 16px 16px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
         }
 
         .result-label {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
         }
 
         .meter-track {
             width: 100%;
-            height: 14px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 7px;
-            overflow: hidden;
-            margin-bottom: 0.4rem;
+            height: 2px;
+            background: #333;
+            margin-bottom: 0.6rem;
         }
 
         .meter-fill {
             height: 100%;
-            border-radius: 7px;
+            background: #fff;
             transition: width 1s ease-out;
             width: 0%;
         }
 
         .result-percentage {
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 1.6rem;
+            font-weight: 200;
+            letter-spacing: 0.05em;
         }
 
         .tags-list {
@@ -151,17 +143,18 @@
         }
 
         .tag-pill {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.12);
+            padding: 0.25rem 0.7rem;
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            border: 1px solid #444;
+            color: #aaa;
         }
 
         .loading {
             display: none;
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 3rem;
         }
 
         .loading.visible {
@@ -169,13 +162,19 @@
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #ff6b6b;
+            width: 40px;
+            height: 40px;
+            border: 1px solid #333;
+            border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin: 0 auto 1rem;
+        }
+
+        .loading p {
+            font-weight: 300;
+            color: #666;
+            letter-spacing: 0.05em;
         }
 
         @keyframes spin {
@@ -183,15 +182,16 @@
         }
 
         .error-msg {
-            color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
-            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: #fff;
+            background: transparent;
+            border: 1px solid #555;
             padding: 1rem;
-            border-radius: 12px;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             display: none;
-            max-width: 500px;
+            max-width: 480px;
             width: 100%;
+            font-weight: 300;
+            font-size: 0.9rem;
         }
 
         .error-msg.visible {
@@ -199,16 +199,17 @@
         }
 
         .try-again {
-            margin-top: 1.5rem;
-            padding: 0.8rem 2rem;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            border: none;
+            margin-top: 2rem;
+            padding: 0.7rem 2.5rem;
+            background: transparent;
+            border: 1px solid #fff;
             color: #fff;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: background 0.3s, color 0.3s;
             display: none;
         }
 
@@ -217,32 +218,25 @@
         }
 
         .try-again:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
-        }
-
-        .footer {
-            margin-top: auto;
-            padding-top: 3rem;
-            color: #555;
-            font-size: 0.85rem;
+            background: #fff;
+            color: #000;
         }
     </style>
 </head>
 <body>
 
-    <h1>Florint's Type Check</h1>
-    <p class="subtitle">Upload a pic and find out if he's Florint's type</p>
+    <h1>Type Check</h1>
+    <p class="subtitle">Upload a photo. Get a verdict.</p>
 
     <div class="upload-zone" id="upload-zone">
-        <div class="icon">📸</div>
-        <p>Drag & drop a photo here<br>or <span>click to browse</span></p>
+        <div class="icon">+</div>
+        <p>Drag & drop a photo here or <span>browse</span></p>
     </div>
     <input type="file" id="file-input" accept="image/*">
 
     <div class="loading" id="loading">
         <div class="spinner"></div>
-        <p>Analyzing... hold tight</p>
+        <p>Analyzing</p>
     </div>
 
     <div class="error-msg" id="error-msg"></div>
@@ -262,8 +256,6 @@
     </div>
 
     <button class="try-again" id="try-again">Try Another</button>
-
-    <p class="footer">Made for laughs, not for love advice.</p>
 
     <script>
         const CONFIG = {
@@ -333,7 +325,6 @@
                 img.onload = () => {
                     const canvas = document.createElement("canvas");
                     let { width, height } = img;
-                    // Scale down if very large
                     const maxDim = 2048;
                     if (width > maxDim || height > maxDim) {
                         const scale = maxDim / Math.max(width, height);
@@ -345,7 +336,6 @@
                     canvas.getContext("2d").drawImage(img, 0, 0, width, height);
                     canvas.toBlob((blob) => {
                         if (blob.size > maxBytes) {
-                            // Try lower quality
                             canvas.toBlob((blob2) => resolve(blob2), "image/jpeg", 0.6);
                         } else {
                             resolve(blob);
@@ -362,14 +352,12 @@
                 return;
             }
 
-            // Show preview
             const reader = new FileReader();
             reader.onload = (e) => {
                 previewImg.src = e.target.result;
             };
             reader.readAsDataURL(file);
 
-            // Hide upload zone, show loading
             uploadZone.style.display = "none";
             errorMsg.classList.remove("visible");
             loading.classList.add("visible");
@@ -414,49 +402,44 @@
                 return;
             }
 
-            // Sort by probability descending
             predictions.sort((a, b) => b.probability - a.probability);
 
             const top = predictions[0];
             const pct = Math.round(top.probability * 100);
 
-            // Determine color and message
             let color, message;
             if (pct >= 80) {
-                color = "#00b894";
-                message = "Absolutely his type!";
+                color = "#fff";
+                message = "Absolutely his type";
             } else if (pct >= 60) {
-                color = "#fdcb6e";
-                message = "Hmm, could be...";
+                color = "#aaa";
+                message = "Could be his type";
             } else if (pct >= 40) {
-                color = "#e17055";
-                message = "Not really feeling it";
+                color = "#666";
+                message = "Probably not";
             } else {
-                color = "#d63031";
-                message = "Nope, not his type";
+                color = "#444";
+                message = "Not his type";
             }
 
-            // Check if the top tag is a "negative" tag (not type)
             const tagName = top.tagName.toLowerCase();
             const isNegativeTag = tagName.includes("not") || tagName.includes("nope") || tagName.includes("negative");
 
             if (isNegativeTag) {
-                // Invert the interpretation
                 if (pct >= 60) {
-                    color = "#d63031";
-                    message = "Definitely NOT his type";
+                    color = "#444";
+                    message = "Definitely not his type";
                 } else {
-                    color = "#fdcb6e";
-                    message = "Maybe there's a chance...";
+                    color = "#aaa";
+                    message = "Maybe there's a chance";
                 }
             }
 
             resultLabel.textContent = message;
             resultLabel.style.color = color;
-            resultPercentage.textContent = `${top.tagName}: ${pct}%`;
+            resultPercentage.textContent = `${top.tagName} — ${pct}%`;
             resultPercentage.style.color = color;
 
-            // Tags
             tagsList.innerHTML = "";
             predictions.forEach(p => {
                 const pill = document.createElement("span");
@@ -465,14 +448,12 @@
                 tagsList.appendChild(pill);
             });
 
-            // Animate meter
             previewContainer.classList.add("visible");
             tryAgain.classList.add("visible");
 
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
-                    meterFill.style.background = `linear-gradient(90deg, ${color}, ${color}dd)`;
-                    // For negative tags, show inverse on the meter
+                    meterFill.style.background = color;
                     const meterPct = isNegativeTag ? (100 - pct) : pct;
                     meterFill.style.width = meterPct + "%";
                 });
