@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florint's Type Check</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.3rem;
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24, #ff6b6b);
+            background-size: 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a0a0c0;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone {
+            width: 100%;
+            max-width: 500px;
+            border: 3px dashed #444;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+            position: relative;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.05);
+            transform: scale(1.02);
+        }
+
+        .upload-zone .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-zone p {
+            font-size: 1.1rem;
+            color: #888;
+        }
+
+        .upload-zone p span {
+            color: #ff6b6b;
+            text-decoration: underline;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .preview-container {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .preview-container.visible {
+            display: block;
+        }
+
+        .preview-img-wrapper {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .preview-img-wrapper img {
+            width: 100%;
+            display: block;
+            border-radius: 16px;
+        }
+
+        .result-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+            border-radius: 0 0 16px 16px;
+        }
+
+        .result-label {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .meter-track {
+            width: 100%;
+            height: 14px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 7px;
+            overflow: hidden;
+            margin-bottom: 0.4rem;
+        }
+
+        .meter-fill {
+            height: 100%;
+            border-radius: 7px;
+            transition: width 1s ease-out;
+            width: 0%;
+        }
+
+        .result-percentage {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .tags-list {
+            margin-top: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag-pill {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .loading.visible {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #ff6b6b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            display: none;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .try-again {
+            margin-top: 1.5rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: none;
+        }
+
+        .try-again.visible {
+            display: inline-block;
+        }
+
+        .try-again:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 3rem;
+            color: #555;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Florint's Type Check</h1>
+    <p class="subtitle">Upload a pic and find out if he's Florint's type</p>
+
+    <div class="upload-zone" id="upload-zone">
+        <div class="icon">📸</div>
+        <p>Drag & drop a photo here<br>or <span>click to browse</span></p>
+    </div>
+    <input type="file" id="file-input" accept="image/*">
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Analyzing... hold tight</p>
+    </div>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="preview-container" id="preview-container">
+        <div class="preview-img-wrapper">
+            <img id="preview-img" src="" alt="Uploaded photo">
+            <div class="result-overlay" id="result-overlay">
+                <div class="result-label" id="result-label"></div>
+                <div class="meter-track">
+                    <div class="meter-fill" id="meter-fill"></div>
+                </div>
+                <div class="result-percentage" id="result-percentage"></div>
+                <div class="tags-list" id="tags-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="try-again" id="try-again">Try Another</button>
+
+    <p class="footer">Made for laughs, not for love advice.</p>
+
+    <script>
+        const CONFIG = {
+            endpoint: "https://northeurope.api.cognitive.microsoft.com",
+            projectId: "6540386a-b2d2-4ab7-bb05-42eb7b0d2a11",
+            trainingKey: "bb07b008bb464924ac090a05f2f42ad1"
+        };
+
+        const uploadZone = document.getElementById("upload-zone");
+        const fileInput = document.getElementById("file-input");
+        const loading = document.getElementById("loading");
+        const errorMsg = document.getElementById("error-msg");
+        const previewContainer = document.getElementById("preview-container");
+        const previewImg = document.getElementById("preview-img");
+        const resultLabel = document.getElementById("result-label");
+        const meterFill = document.getElementById("meter-fill");
+        const resultPercentage = document.getElementById("result-percentage");
+        const tagsList = document.getElementById("tags-list");
+        const tryAgain = document.getElementById("try-again");
+
+        uploadZone.addEventListener("click", () => fileInput.click());
+
+        uploadZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            uploadZone.classList.add("dragover");
+        });
+
+        uploadZone.addEventListener("dragleave", () => {
+            uploadZone.classList.remove("dragover");
+        });
+
+        uploadZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove("dragover");
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+
+        tryAgain.addEventListener("click", () => {
+            resetUI();
+            fileInput.click();
+        });
+
+        function resetUI() {
+            previewContainer.classList.remove("visible");
+            tryAgain.classList.remove("visible");
+            errorMsg.classList.remove("visible");
+            uploadZone.style.display = "";
+            meterFill.style.width = "0%";
+        }
+
+        async function handleFile(file) {
+            if (!file.type.startsWith("image/")) {
+                showError("Please upload an image file.");
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Hide upload zone, show loading
+            uploadZone.style.display = "none";
+            errorMsg.classList.remove("visible");
+            loading.classList.add("visible");
+            previewContainer.classList.remove("visible");
+            tryAgain.classList.remove("visible");
+
+            try {
+                const result = await classifyImage(file);
+                showResult(result);
+            } catch (err) {
+                showError("Something went wrong: " + err.message);
+            } finally {
+                loading.classList.remove("visible");
+            }
+        }
+
+        async function classifyImage(file) {
+            const url = `${CONFIG.endpoint}/customvision/v3.3/Training/projects/${CONFIG.projectId}/quicktest/image`;
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Training-Key": CONFIG.trainingKey,
+                    "Content-Type": "application/octet-stream"
+                },
+                body: file
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(`API error ${response.status}: ${text}`);
+            }
+
+            return response.json();
+        }
+
+        function showResult(data) {
+            const predictions = data.predictions || [];
+            if (predictions.length === 0) {
+                showError("No predictions returned. Make sure the model is trained!");
+                return;
+            }
+
+            // Sort by probability descending
+            predictions.sort((a, b) => b.probability - a.probability);
+
+            const top = predictions[0];
+            const pct = Math.round(top.probability * 100);
+
+            // Determine color and message
+            let color, message;
+            if (pct >= 80) {
+                color = "#00b894";
+                message = "Absolutely his type!";
+            } else if (pct >= 60) {
+                color = "#fdcb6e";
+                message = "Hmm, could be...";
+            } else if (pct >= 40) {
+                color = "#e17055";
+                message = "Not really feeling it";
+            } else {
+                color = "#d63031";
+                message = "Nope, not his type";
+            }
+
+            // Check if the top tag is a "negative" tag (not type)
+            const tagName = top.tagName.toLowerCase();
+            const isNegativeTag = tagName.includes("not") || tagName.includes("nope") || tagName.includes("negative");
+
+            if (isNegativeTag) {
+                // Invert the interpretation
+                if (pct >= 60) {
+                    color = "#d63031";
+                    message = "Definitely NOT his type";
+                } else {
+                    color = "#fdcb6e";
+                    message = "Maybe there's a chance...";
+                }
+            }
+
+            resultLabel.textContent = message;
+            resultLabel.style.color = color;
+            resultPercentage.textContent = `${top.tagName}: ${pct}%`;
+            resultPercentage.style.color = color;
+
+            // Tags
+            tagsList.innerHTML = "";
+            predictions.forEach(p => {
+                const pill = document.createElement("span");
+                pill.className = "tag-pill";
+                pill.textContent = `${p.tagName}: ${Math.round(p.probability * 100)}%`;
+                tagsList.appendChild(pill);
+            });
+
+            // Animate meter
+            previewContainer.classList.add("visible");
+            tryAgain.classList.add("visible");
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    meterFill.style.background = `linear-gradient(90deg, ${color}, ${color}dd)`;
+                    // For negative tags, show inverse on the meter
+                    const meterPct = isNegativeTag ? (100 - pct) : pct;
+                    meterFill.style.width = meterPct + "%";
+                });
+            });
+        }
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.classList.add("visible");
+            uploadZone.style.display = "";
+            tryAgain.classList.add("visible");
+        }
+    </script>
+</body>
+</html>
