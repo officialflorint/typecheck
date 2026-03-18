@@ -27,6 +27,7 @@ jobs:
           sed -i 's|__CV_ENDPOINT__|${{ secrets.CV_ENDPOINT }}|g' index.html
           sed -i 's|__PROJECT_ID__|${{ secrets.PROJECT_ID }}|g' index.html
           sed -i 's|__TRAINING_KEY__|${{ secrets.TRAINING_KEY }}|g' index.html
+          sed -i 's|__ITERATION_ID__|${{ secrets.ITERATION_ID }}|g' index.html
 
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3

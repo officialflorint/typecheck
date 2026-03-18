@@ -269,7 +269,8 @@
         const CONFIG = {
             endpoint: "__CV_ENDPOINT__",
             projectId: "__PROJECT_ID__",
-            trainingKey: "__TRAINING_KEY__"
+            trainingKey: "__TRAINING_KEY__",
+            iterationId: "__ITERATION_ID__"
         };
 
         const uploadZone = document.getElementById("upload-zone");
@@ -353,7 +354,7 @@
         }
 
         async function classifyImage(file) {
-            const url = `${CONFIG.endpoint}/customvision/v3.3/Training/projects/${CONFIG.projectId}/quicktest/image`;
+            const url = `${CONFIG.endpoint}/customvision/v3.3/Training/projects/${CONFIG.projectId}/quicktest/image?iterationId=${CONFIG.iterationId}`;
 
             const response = await fetch(url, {
                 method: "POST",
