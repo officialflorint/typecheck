@@ -442,7 +442,7 @@
                 // Wait for preview image to load for age detection
                 await new Promise(r => { previewImg.onload = r; });
                 const age = await estimateAge(previewImg);
-                if (age !== null && age < 16) {
+                if (age !== null && age < 14) {
                     showResult({
                         predictions: [{ tagName: "Not my type", probability: 1.0 }],
                         _blocked: true
