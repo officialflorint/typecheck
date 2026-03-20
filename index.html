@@ -251,13 +251,6 @@
             color: #fff;
         }
 
-        .detected-age {
-            margin-top: 0.6rem;
-            font-size: 0.75rem;
-            color: #666;
-            letter-spacing: 0.05em;
-        }
-
         .model-btn:hover:not(.active) {
             border-color: #666;
             color: #aaa;
@@ -298,7 +291,6 @@
                 </div>
                 <div class="result-percentage" id="result-percentage"></div>
                 <div class="tags-list" id="tags-list"></div>
-                <div class="detected-age" id="detected-age"></div>
             </div>
         </div>
     </div>
@@ -450,9 +442,6 @@
                 // Wait for preview image to load for age detection
                 await new Promise(r => { previewImg.onload = r; });
                 const age = await estimateAge(previewImg);
-                document.getElementById("detected-age").textContent = age !== null
-                    ? `Detected age: ~${Math.round(age)}`
-                    : "Detected age: no face found";
                 if (age !== null && age < 16) {
                     showResult({
                         predictions: [{ tagName: "Not my type", probability: 1.0 }],
