@@ -374,16 +374,16 @@
         async function loadFaceModels() {
             if (faceModelsLoaded) return;
             await Promise.all([
-                faceApi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-                faceApi.nets.ageGenderNet.loadFromUri(MODEL_URL)
+                faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)
             ]);
             faceModelsLoaded = true;
         }
 
         async function estimateAge(imgElement) {
             await loadFaceModels();
-            const detections = await faceApi
-                .detectAllFaces(imgElement, new faceApi.TinyFaceDetectorOptions())
+            const detections = await faceapi
+                .detectAllFaces(imgElement, new faceapi.TinyFaceDetectorOptions())
                 .withAgeAndGender();
             if (detections.length === 0) return null;
             return Math.min(...detections.map(d => d.age));
