@@ -256,6 +256,7 @@
             color: #aaa;
         }
     </style>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </head>
 <body>
 
@@ -367,6 +368,27 @@
             meterFill.style.width = "0%";
         }
 
+        const MODEL_URL = "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights";
+        let faceModelsLoaded = false;
+
+        async function loadFaceModels() {
+            if (faceModelsLoaded) return;
+            await Promise.all([
+                faceApi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                faceApi.nets.ageGenderNet.loadFromUri(MODEL_URL)
+            ]);
+            faceModelsLoaded = true;
+        }
+
+        async function estimateAge(imgElement) {
+            await loadFaceModels();
+            const detections = await faceApi
+                .detectAllFaces(imgElement, new faceApi.TinyFaceDetectorOptions())
+                .withAgeAndGender();
+            if (detections.length === 0) return null;
+            return Math.min(...detections.map(d => d.age));
+        }
+
         function compressImage(file, maxBytes = 3800000) {
             return new Promise((resolve) => {
                 if (file.size <= maxBytes) {
@@ -417,6 +439,16 @@
             tryAgain.classList.remove("visible");
 
             try {
+                // Wait for preview image to load for age detection
+                await new Promise(r => { previewImg.onload = r; });
+                const age = await estimateAge(previewImg);
+                if (age !== null && age < 16) {
+                    showResult({
+                        predictions: [{ tagName: "Not my type", probability: 1.0 }],
+                        _blocked: true
+                    });
+                    return;
+                }
                 const compressed = await compressImage(file);
                 const result = await classifyImage(compressed);
                 showResult(result);
