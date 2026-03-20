@@ -453,7 +453,7 @@
                 document.getElementById("detected-age").textContent = age !== null
                     ? `Detected age: ~${Math.round(age)}`
                     : "Detected age: no face found";
-                if (age !== null && age < 15) {
+                if (age !== null && age < 16) {
                     showResult({
                         predictions: [{ tagName: "Not my type", probability: 1.0 }],
                         _blocked: true
